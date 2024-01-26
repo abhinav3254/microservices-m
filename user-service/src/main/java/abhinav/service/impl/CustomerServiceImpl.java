@@ -1,8 +1,11 @@
-package com.serviceimpl;
+package abhinav.service.impl;
 
 import java.util.Date;
 import java.util.Optional;
 
+import abhinav.model.Customer;
+import abhinav.repository.CustomerRepository;
+import abhinav.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.model.Customer;
-import com.repository.CustomerRepository;
-import com.service.CustomerService;
 
 
 @Service

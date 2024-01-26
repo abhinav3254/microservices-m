@@ -1,8 +1,8 @@
-package com.service;
+package abhinav.service;
 
 import org.springframework.http.ResponseEntity;
 
-import com.model.Customer;
+import abhinav.model.Customer;
 
 
 public interface CustomerService {

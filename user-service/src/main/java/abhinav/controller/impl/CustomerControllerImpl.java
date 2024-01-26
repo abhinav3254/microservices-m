@@ -1,6 +1,7 @@
-package com.controller.controllerimpl;
+package abhinav.controller.impl;
 
 
+import abhinav.controller.CustomerController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.controller.CustomerController;
-import com.model.Customer;
-import com.service.CustomerService;
+import abhinav.model.Customer;
+import abhinav.service.CustomerService;
 
 
 
@@ -33,6 +33,11 @@ public class CustomerControllerImpl implements CustomerController {
 		}
 		
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> testingServer() {
+		return new ResponseEntity<>("user service is working",HttpStatus.OK);
 	}
 
 }
