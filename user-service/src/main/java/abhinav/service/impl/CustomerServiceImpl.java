@@ -95,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 				if (customer.getPassword().equals(logInDTO.getPassword())) {
 
-					String token = jwtUtils.generateToken(customer.getUsername(),"user");
+					String token = jwtUtils.generateToken(customer.getUsername(),customer.getRole());
 
 					return new ResponseEntity<String>("{ \n\ttoken : "+token+" \n}",HttpStatus.OK);
 

@@ -16,6 +16,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtUtils {
+
+    // 1 year in milliseconds
+    private static final long EXPIRATION_TIME_IN_MILLIS = 365L * 24 * 60 * 60 * 1000;
+
+    private static final String ROLE_CLAIM_KEY = "role";
+
     private static final byte[] SECRET_KEY = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256).getEncoded();
 
 
@@ -43,15 +49,19 @@ public class JwtUtils {
 
 
     public String generateToken(String username, String role) {
-        Map<String, Object> claims = new HashMap<String, Object>();
-        claims.put("role", role);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(ROLE_CLAIM_KEY, role);
         return createToken(claims, username);
+    }
+
+    public String extractUserRole(String token) {
+        return extractClaims(token, claims -> claims.get(ROLE_CLAIM_KEY, String.class));
     }
 
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_IN_MILLIS))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
@@ -69,4 +79,5 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 
     }
+
 }
