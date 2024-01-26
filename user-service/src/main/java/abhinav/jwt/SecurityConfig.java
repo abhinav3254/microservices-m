@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,15 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(myUserDetailsService);
     }
 
-
-    /**
-     * Define the password encoder used for authentication. Note that NoOpPasswordEncoder is used here,
-     * which is not recommended for production. You should use a more secure password encoder in a real application.
-     *
-     * @return PasswordEncoder instance.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() { return NoOpPasswordEncoder.getInstance(); }
 
     @Bean
     @Override
@@ -73,6 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Add the custom JWT filter before the default UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

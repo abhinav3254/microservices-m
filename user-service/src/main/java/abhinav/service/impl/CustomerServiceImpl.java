@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -25,9 +26,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private JwtUtils jwtUtils;
-
+	
 	@Autowired
-	private JwtFilter jwtFilter;
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -44,9 +45,11 @@ public class CustomerServiceImpl implements CustomerService {
 				if (emailOptional.isEmpty() && phoneNumberOptional.isEmpty() && usernameOptional.isEmpty()) {
 					
 					if (customer.getPhoneNumber().length()>14 || customer.getPhoneNumber().length()<10) {
-						return new ResponseEntity<String>("{ \n\tmessage : phone number length is invalid\n}",HttpStatus.CONFLICT); 
+						return new ResponseEntity<>("{ \n\tmessage : phone number length is invalid\n}",HttpStatus.CONFLICT);
 					}
-					
+
+					// Hash the password before saving
+					customer.setPassword(passwordEncoder.encode(customer.getPassword()));
 					customer.setCreatedDate(new Date());
 					customer.setLastLogin(new Date());
 					customerRepository.save(customer);
@@ -55,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
 					return new ResponseEntity<String>("{ \n\tmessage : email already exists \n}",HttpStatus.CONFLICT);
 				} else if (phoneNumberOptional.isPresent()) {
 					return new ResponseEntity<String>("{ \n\tmessage : phone number already exists \n}",HttpStatus.CONFLICT);
-				} else if (usernameOptional.isPresent()) {
+				} else {
 					return new ResponseEntity<String>("{ \n\tmessage : username already exists \n}",HttpStatus.CONFLICT);
 				}
 				
@@ -79,9 +82,8 @@ public class CustomerServiceImpl implements CustomerService {
 		if (customer.getFirstName().isBlank()) return false; 
 		if (customer.getLastName().isBlank())return false; 
 		if (customer.getPassword().isBlank()) return false;
-		if (customer.getPhoneNumber().isBlank()) return false;
-		return true;
-	}
+        return !customer.getPhoneNumber().isBlank();
+    }
 
 
 	public ResponseEntity<String> loginCustomer(LogInDTO logInDTO) {
@@ -93,21 +95,21 @@ public class CustomerServiceImpl implements CustomerService {
 
 				Customer customer = customerOptional.get();
 
-				if (customer.getPassword().equals(logInDTO.getPassword())) {
+				if (passwordEncoder.matches(logInDTO.getPassword(), customer.getPassword())) {
 
 					String token = jwtUtils.generateToken(customer.getUsername(),customer.getRole());
 
-					return new ResponseEntity<String>("{ \n\ttoken : "+token+" \n}",HttpStatus.OK);
+					return new ResponseEntity<>("{ \n\ttoken : "+token+" \n}",HttpStatus.OK);
 
 				}
 
-				return new ResponseEntity<String>("{ \n\tmessage : wrong password!! \n}",HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("{ \n\tmessage : wrong password!! \n}",HttpStatus.NOT_FOUND);
 
 			}
-			return new ResponseEntity<String>("{ \n\tmessage : user not found \n}",HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("{ \n\tmessage : user not found \n}",HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
 			logger.error("error in login service",e);
-			return new ResponseEntity<String>("{ \n\tmessage : "+e+" \n}",HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("{ \n\tmessage : "+e+" \n}",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
