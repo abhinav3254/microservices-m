@@ -26,7 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private JwtUtils jwtUtils;
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
