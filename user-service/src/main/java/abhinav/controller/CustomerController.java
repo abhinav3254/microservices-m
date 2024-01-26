@@ -1,5 +1,6 @@
 package abhinav.controller;
 
+import abhinav.dto.LogInDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,5 +18,8 @@ public interface CustomerController {
 
 	@GetMapping("/test")
 	ResponseEntity<String> testingServer();
+
+	@PutMapping("/login")
+	ResponseEntity<String> registerUser(@RequestBody LogInDTO logInDTO);
 
 }

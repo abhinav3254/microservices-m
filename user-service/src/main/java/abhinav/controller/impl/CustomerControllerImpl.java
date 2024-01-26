@@ -2,6 +2,7 @@ package abhinav.controller.impl;
 
 
 import abhinav.controller.CustomerController;
+import abhinav.dto.LogInDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +25,17 @@ public class CustomerControllerImpl implements CustomerController {
 
 	@Override
 	public ResponseEntity<String> registerUser(Customer customer) {
-		try {
-			
 			return customerService.registerUser(customer);
-			
-		} catch (Exception e) {
-			logger.error("An Error Occured",e);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Override
 	public ResponseEntity<String> testingServer() {
 		return new ResponseEntity<>("user service is working",HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<String> registerUser(LogInDTO logInDTO) {
+		return customerService.loginCustomer(logInDTO);
 	}
 
 }

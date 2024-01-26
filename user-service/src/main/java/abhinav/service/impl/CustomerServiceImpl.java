@@ -3,6 +3,9 @@ package abhinav.service.impl;
 import java.util.Date;
 import java.util.Optional;
 
+import abhinav.dto.LogInDTO;
+import abhinav.jwt.JwtFilter;
+import abhinav.jwt.JwtUtils;
 import abhinav.model.Customer;
 import abhinav.repository.CustomerRepository;
 import abhinav.service.CustomerService;
@@ -19,6 +22,12 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {
 	
 	Logger logger = LogManager.getLogger(CustomerServiceImpl.class);
+
+	@Autowired
+	private JwtUtils jwtUtils;
+
+	@Autowired
+	private JwtFilter jwtFilter;
 	
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -73,5 +82,34 @@ public class CustomerServiceImpl implements CustomerService {
 		if (customer.getPhoneNumber().isBlank()) return false;
 		return true;
 	}
+
+
+	public ResponseEntity<String> loginCustomer(LogInDTO logInDTO) {
+		try {
+
+			Optional<Customer> customerOptional = customerRepository.findByUsername(logInDTO.getUsername());
+
+			if (customerOptional.isPresent()) {
+
+				Customer customer = customerOptional.get();
+
+				if (customer.getPassword().equals(logInDTO.getPassword())) {
+
+					String token = jwtUtils.generateToken(customer.getUsername(),"user");
+
+					return new ResponseEntity<String>("{ \n\ttoken : "+token+" \n}",HttpStatus.OK);
+
+				}
+
+				return new ResponseEntity<String>("{ \n\tmessage : wrong password!! \n}",HttpStatus.NOT_FOUND);
+
+			}
+			return new ResponseEntity<String>("{ \n\tmessage : user not found \n}",HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			logger.error("error in login service",e);
+			return new ResponseEntity<String>("{ \n\tmessage : "+e+" \n}",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 }

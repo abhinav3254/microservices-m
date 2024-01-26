@@ -49,6 +49,12 @@ public class Customer {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastLogin;
 
+	@Column(name = "role")
+	private String role;
+
+	@Column(name = "status")
+	private String status;
+
 
 	public Long getId() {
 		return id;
